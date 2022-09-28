@@ -7,6 +7,3 @@ output: github_document
 library(tidyverse)
 ```
 
-## Problem 1
-
-### Code for loading "`penguins`" dataset and descriptions 
