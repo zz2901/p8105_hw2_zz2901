@@ -1,0 +1,12 @@
+---
+title: "Homework 2 zz2901"
+output: github_document
+---
+
+```{r load_package, echo = FALSE, message=FALSE}
+library(tidyverse)
+```
+
+## Problem 1
+
+### Code for loading "`penguins`" dataset and descriptions 
