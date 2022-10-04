@@ -134,11 +134,10 @@ First, clean the data in pols-month.csv. Use separate() to break up the variable
 
 ```{r}
 pols_month = read_csv("data/fivethirtyeight_datasets/pols-month.csv") %>% 
-  mutate(mon_temp=months(as.Date(mon))) %>% 
   separate(mon,sep="-",c("year","month","day")) %>%
   arrange(year,month) %>% 
-  mutate(month=mon_temp, president=recode(prez_dem,`0`="gop",`1`="dem"))  %>% 
-  select(year,month,president,everything(), - mon_temp,-prez_dem,-prez_gop,-day)  
+  mutate(month=month.abb[as.numeric(month)], president=recode(prez_dem,`0`="gop",`1`="dem"))  %>% 
+  select(year,month,president,everything(),-prez_dem,-prez_gop,-day)  
   
 pols_month
 ```
@@ -148,16 +147,31 @@ Second, clean the data in snp.csv using a similar process to the above. For cons
 
 ```{r}
 snp = read_csv("data/fivethirtyeight_datasets/snp.csv")%>% 
-  mutate(date=as.Date(date,"%m/%d/%y"),mon_temp=months(as.Date(date,"%m/%d/%y"))) %>% 
+  mutate(date=as.Date(date,"%m/%d/%y")) %>% 
   separate(date,sep="-",c("year","month","day")) %>%
   arrange(year,month) %>% 
-  mutate(month=mon_temp)  %>% 
-  select(year,month,everything(), -day,-mon_temp)  
+  mutate(month=month.abb[as.numeric(month)])  %>% 
+  select(year,month,everything(), -day)  
 snp
 ```
 
 
 Third, tidy the unemployment data so that it can be merged with the previous datasets. This process will involve switching from “wide” to “long” format; ensuring that key variables have the same name; and ensuring that key variables take the same values.
+
+```{r}
+unemployment = read_csv("data/fivethirtyeight_datasets/unemployment.csv") %>% 
+  rename(year=Year) %>% 
+  arrange(year) %>% 
+  pivot_longer(
+    Jan:Dec,
+    names_to = "month",
+    values_to = "unemployment_p"
+  ) 
+  
+unemployment
+
+```
+
 
 Join the datasets by merging snp into pols, and merging unemployment into the result.
 
