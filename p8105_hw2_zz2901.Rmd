@@ -136,8 +136,8 @@ First, clean the data in pols-month.csv. Use separate() to break up the variable
 pols_month = read_csv("data/fivethirtyeight_datasets/pols-month.csv") %>% 
   separate(mon,sep="-",c("year","month","day")) %>%
   arrange(year,month) %>% 
-  mutate(month=month.abb[as.numeric(month)], president=recode(prez_dem,`0`="gop",`1`="dem"))  %>% 
-  select(year,month,president,everything(),-prez_dem,-prez_gop,-day)  
+  mutate(year=as.numeric(year),month=month.abb[as.numeric(month)], president=recode(prez_dem,`0`="gop",`1`="dem"))  %>% 
+  select(year,month,everything(),-prez_dem,-prez_gop,-day)  
   
 pols_month
 ```
@@ -150,7 +150,7 @@ snp = read_csv("data/fivethirtyeight_datasets/snp.csv")%>%
   mutate(date=as.Date(date,"%m/%d/%y")) %>% 
   separate(date,sep="-",c("year","month","day")) %>%
   arrange(year,month) %>% 
-  mutate(month=month.abb[as.numeric(month)])  %>% 
+  mutate(year=as.numeric(year),month=month.abb[as.numeric(month)])  %>% 
   select(year,month,everything(), -day)  
 snp
 ```
@@ -161,6 +161,7 @@ Third, tidy the unemployment data so that it can be merged with the previous dat
 ```{r}
 unemployment = read_csv("data/fivethirtyeight_datasets/unemployment.csv") %>% 
   rename(year=Year) %>% 
+  mutate(year=as.numeric(year)) %>% 
   arrange(year) %>% 
   pivot_longer(
     Jan:Dec,
@@ -175,5 +176,29 @@ unemployment
 
 Join the datasets by merging snp into pols, and merging unemployment into the result.
 
+```{r}
+pols_snp_merge = 
+  full_join(pols_month,snp,by=c("year","month"))
+pols_snp_merge
+
+pols_snp_unemployment = 
+  full_join(pols_snp_merge,unemployment,by=c("year","month"))
+pols_snp_unemployment
+```
+
+
 Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
+
+* Data set `pols_month` after tidying contains ``r nrow(pols_month)`` observations and ``r ncol(pols_month)`` variables, including results from ``r pols_month$year[1]`` to ``r pols_month$year[nrow(pols_month)]``. 
+
+  * Variable `president` was recoded from `prez_dem` and `prez_gop`. It indicates whether the president of the corresponding year is democratic or republican. Rest of variables start with `gov_`, `sen_`, `rep_`` indicates the number of governors, senators, or representatives for each party in that year.
+  
+* Data set `snp` contains `date` and `close` variables. After tidying and seperating `date` into `year` and `month` variables, it has ``r nrow(snp)`` observations and ``r ncol(snp)`` variables.
+
+  * Variable `close` indicates the closing values of the S&P stock index on the associated date.
+  
+* Data set `unemployment` originally contains `Year` and percentage of unemployment percentage for each month in wide format. After transforming it into long format, it has ``r nrow(unemployment)`` observations and ``r ncol(unemployment)`` variables.
+
+  * Variable `month` stores the original column names, which represents months. 
+  * Variable `unemployment_p` stores the row values for each month's unemployment precentages.
 
