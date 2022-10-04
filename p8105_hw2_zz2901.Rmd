@@ -7,6 +7,7 @@ output: github_document
 
 ```{r load_package, echo = FALSE, message=FALSE}
 library(tidyverse)
+options(tibble.print_min = 5)
 ```
 
 ## Problem 1
@@ -82,8 +83,46 @@ read and clean Mr. Trash Wheel Sheet
 
 ```{r}
 mr_trash_wheel = 
-  readxl::read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", range = "A2:N535") %>%
-  janitor::clean_names()
+  readxl::read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet="Mr. Trash Wheel",
+                     range = "A2:N535") %>%
+  janitor::clean_names() %>%
+  filter(!is.na(dumpster) & !is.na(month)) %>% 
+  mutate(sheet="Mr. Trash Wheel") %>% 
+  select(sheet,everything())
 ```
 
+read and clean Professor Trash Wheel Sheet
 
+```{r}
+prof_trash_wheel = 
+  readxl::read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet="Professor Trash Wheel", 
+                     range = "A2:N117") %>%
+  janitor::clean_names() %>%
+  filter(!is.na(dumpster) & !is.na(month))%>% 
+  mutate(sheet="Professor Trash Wheel") %>% 
+  select(sheet,everything())
+```
+
+combine the two data sets
+
+```{r}
+mr_prof_trash_wheel =
+  rbind(mr_trash_wheel,prof_trash_wheel)
+mr_prof_trash_wheel
+```
+
+Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables.
+
+* The data sets are both imported using omitting the total rows and with new variable called `sheet` to record their sheet of origin. The variable names are cleaned using `janior` package's `clean_names()` function. 
+
+* The two data sets have same variables, `ncol(mr_prof_trash_wheel)`. `dumpster` is the ID for the dumpster. `month`, `year`, `date` are date variables. `weight_tons`:`homes_powered` are variables recording the corresponding data for each dumpster. 
+
+* `mr_trash_wheel` contains ``r nrow(mr_trash_wheel)`` observations. And `prof_trash_wheel` contains ``r nrow(prof_trash_wheel)`` observations.
+
+* The combined data set `mr_prof_trash_wheel` contains ``r nrow(mr_prof_trash_wheel)`` observations.
+
+For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of sports balls collected by Mr. Trash Wheel in 2020?
+
+* The total weight of trash collected by Professor Trash Wheel was ``r sum(mr_prof_trash_wheel$weight_tons[which(mr_prof_trash_wheel$sheet=="Professor Trash Wheel")])`` tons.
+
+* The total number of sports balls collected by Mr. Trash Wheel in 2020 was ``r sum(mr_prof_trash_wheel$sports_balls[which(mr_prof_trash_wheel$sheet=="Mr. Trash Wheel" & mr_prof_trash_wheel$year==2020)])``.
