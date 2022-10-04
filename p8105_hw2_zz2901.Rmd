@@ -126,3 +126,40 @@ For available data, what was the total weight of trash collected by Professor Tr
 * The total weight of trash collected by Professor Trash Wheel was ``r sum(mr_prof_trash_wheel$weight_tons[which(mr_prof_trash_wheel$sheet=="Professor Trash Wheel")])`` tons.
 
 * The total number of sports balls collected by Mr. Trash Wheel in 2020 was ``r sum(mr_prof_trash_wheel$sports_balls[which(mr_prof_trash_wheel$sheet=="Mr. Trash Wheel" & mr_prof_trash_wheel$year==2020)])``.
+
+
+** Problem 3
+
+First, clean the data in pols-month.csv. Use separate() to break up the variable mon into integer variables year, month, and day; replace month number with month name; create a president variable taking values gop and dem, and remove prez_dem and prez_gop; and remove the day variable.
+
+```{r}
+pols_month = read_csv("data/fivethirtyeight_datasets/pols-month.csv") %>% 
+  mutate(mon_temp=months(as.Date(mon))) %>% 
+  separate(mon,sep="-",c("year","month","day")) %>%
+  arrange(year,month) %>% 
+  mutate(month=mon_temp, president=recode(prez_dem,`0`="gop",`1`="dem"))  %>% 
+  select(year,month,president,everything(), - mon_temp,-prez_dem,-prez_gop,-day)  
+  
+pols_month
+```
+
+
+Second, clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
+
+```{r}
+snp = read_csv("data/fivethirtyeight_datasets/snp.csv")%>% 
+  mutate(date=as.Date(date,"%m/%d/%y"),mon_temp=months(as.Date(date,"%m/%d/%y"))) %>% 
+  separate(date,sep="-",c("year","month","day")) %>%
+  arrange(year,month) %>% 
+  mutate(month=mon_temp)  %>% 
+  select(year,month,everything(), -day,-mon_temp)  
+snp
+```
+
+
+Third, tidy the unemployment data so that it can be merged with the previous datasets. This process will involve switching from “wide” to “long” format; ensuring that key variables have the same name; and ensuring that key variables take the same values.
+
+Join the datasets by merging snp into pols, and merging unemployment into the result.
+
+Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
+
