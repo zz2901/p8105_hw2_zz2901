@@ -83,11 +83,11 @@ read and clean Mr. Trash Wheel Sheet
 
 ```{r}
 mr_trash_wheel = 
-  readxl::read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet="Mr. Trash Wheel",
-                     range = "A2:N535") %>%
+  readxl::read_excel("data/Trash Wheel Collection Data.xlsx", sheet="Mr. Trash Wheel",
+                     range = "A2:N550") %>%
   janitor::clean_names() %>%
   filter(!is.na(dumpster) & !is.na(month)) %>% 
-  mutate(sheet="Mr. Trash Wheel") %>% 
+  mutate(sheet="Mr. Trash Wheel",year=as.numeric(year)) %>% 
   select(sheet,everything())
 ```
 
@@ -95,8 +95,8 @@ read and clean Professor Trash Wheel Sheet
 
 ```{r}
 prof_trash_wheel = 
-  readxl::read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet="Professor Trash Wheel", 
-                     range = "A2:N117") %>%
+  readxl::read_excel("data/Trash Wheel Collection Data.xlsx", sheet="Professor Trash Wheel", 
+                     range = "A2:M97") %>%
   janitor::clean_names() %>%
   filter(!is.na(dumpster) & !is.na(month))%>% 
   mutate(sheet="Professor Trash Wheel") %>% 
@@ -107,7 +107,7 @@ combine the two data sets
 
 ```{r}
 mr_prof_trash_wheel =
-  rbind(mr_trash_wheel,prof_trash_wheel)
+  full_join(mr_trash_wheel,prof_trash_wheel)
 mr_prof_trash_wheel
 ```
 
@@ -115,9 +115,9 @@ Write a paragraph about these data; you are encouraged to use inline R. Be sure 
 
 * The data sets are both imported using omitting the total rows and with new variable called `sheet` to record their sheet of origin. The variable names are cleaned using `janior` package's `clean_names()` function. 
 
-* The two data sets have same variables, `ncol(mr_prof_trash_wheel)`. `dumpster` is the ID for the dumpster. `month`, `year`, `date` are date variables. `weight_tons`:`homes_powered` are variables recording the corresponding data for each dumpster. 
+* The two data sets have same variables, `ncol(mr_prof_trash_wheel)` except that `prof_trash_wheel` missed the `sports_balls`. `dumpster` is the ID for the dumpster. `month`, `year`, `date` are date variables. `weight_tons`:`homes_powered` are variables recording the corresponding data for each dumpster. 
 
-* `mr_trash_wheel` contains ``r nrow(mr_trash_wheel)`` observations. And `prof_trash_wheel` contains ``r nrow(prof_trash_wheel)`` observations.
+* `mr_trash_wheel` contains ``r nrow(mr_trash_wheel)`` observations. And `prof_trash_wheel` contains ``r nrow(prof_trash_wheel)`` observations. It was created by using `full_join()`
 
 * The combined data set `mr_prof_trash_wheel` contains ``r nrow(mr_prof_trash_wheel)`` observations.
 
