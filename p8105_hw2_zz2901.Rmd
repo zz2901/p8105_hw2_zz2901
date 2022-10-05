@@ -87,7 +87,11 @@ mr_trash_wheel =
                      range = "A2:N550") %>%
   janitor::clean_names() %>%
   filter(!is.na(dumpster) & !is.na(month)) %>% 
+<<<<<<< HEAD
   mutate(sheet="Mr. Trash Wheel",year=as.numeric(year),sports_balls=as.integer(round(sports_balls))) %>% 
+=======
+  mutate(sheet="Mr. Trash Wheel",year=as.numeric(year)) %>% 
+>>>>>>> 1265d717c7569b008a82941088fad4b064c57bf0
   select(sheet,everything())
 ```
 
