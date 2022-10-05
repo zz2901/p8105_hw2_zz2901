@@ -206,4 +206,4 @@ Write a short paragraph about these datasets. Explain briefly what each dataset 
 
 * First merging `pols_month` and `snp` by variables `year` and `month`, the merged data set `pols_snp_merge` has ``r nrow(pols_snp_merge)`` observations and ``r ncol(pols_snp_merge)`` variables.
 
-* Then merging `pols_snp_merge` and `unemployment` by variables `year` and `month`, the merged data set `pols_snp_unemployment` has ``r nrow(pols_snp_unemployment)`` observations and ``r ncol(pols_snp_unemployment)`` variables.
+* Then merging `pols_snp_merge` and `unemployment` by variables `year` and `month`, the merged data set `pols_snp_unemployment` has ``r nrow(pols_snp_unemployment)`` observations and ``r ncol(pols_snp_unemployment)`` variables. This final data set should contain all observations from the three files including the three key variables `president`, `close`, and `unemployment_p`.
