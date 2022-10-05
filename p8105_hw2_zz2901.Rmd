@@ -87,7 +87,6 @@ mr_trash_wheel =
   janitor::clean_names() %>%
   filter(!is.na(dumpster) & !is.na(month)) %>% 
   mutate(sheet="Mr. Trash Wheel",year=as.numeric(year),sports_balls=as.integer(round(sports_balls))) %>% 
-  mutate(sheet="Mr. Trash Wheel",year=as.numeric(year)) %>% 
   select(sheet,everything())
 ```
 
